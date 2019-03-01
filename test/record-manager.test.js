@@ -5,46 +5,72 @@ import RecordManager from '../src/record-manager';
 
 describe('RecordManager', () => {
   describe('#import', () => {
-    let recordManager;
+    describe('when importing a single record', () => {
+      const commaDelimitedRecord = 'a,b,c,d,1/1/1111';
+      const pipeDelimitedRecord = 'a|b|c|d|1/1/1111';
+      const spaceDelimitedRecord = 'a b c d 1/1/1111';
 
-    beforeEach(() => recordManager = new RecordManager());
+      let recordManager;
+      beforeEach(() => recordManager = new RecordManager());
 
-    it('imports a single, comma-delimited record', () => {
-      const record = 'a,b,c,d,1/1/1111';
-      recordManager.import(record);
-      expect(recordManager.records).to.have.length(1);
+      it('imports a single, comma-delimited record', () => {
+        recordManager.import(commaDelimitedRecord);
+        expect(recordManager.records).to.have.length(1);
+      });
+
+      it('imports a single, pipe-delimited record', () => {
+        recordManager.import(pipeDelimitedRecord);
+        expect(recordManager.records).to.have.length(1);
+      });
+
+      it('imports a single, space-delimited record', () => {
+        recordManager.import(spaceDelimitedRecord);
+        expect(recordManager.records).to.have.length(1);
+      });
+
+      it('the imported record is a Record instance', () => {
+        recordManager.import(commaDelimitedRecord);
+        const newRecord = recordManager.records[0];
+        expect(newRecord).to.be.an.instanceOf(Record);
+      });
+
+      it('the imported record has the proper fields', () => {
+        recordManager.import(commaDelimitedRecord);
+        const newRecord = recordManager.records[0];
+        const expectedFields = {
+          lastName: 'a',
+          firstName: 'b',
+          gender: 'c',
+          favoriteColor: 'd'
+        };
+        const { lastName, firstName, gender, favoriteColor, dateOfBirth } = newRecord;
+        expect({ lastName, firstName, gender, favoriteColor }).to.include(expectedFields);
+        expect(dateOfBirth.getTime()).to.eq(new Date('1111-01-01').getTime());
+      });
     });
 
-    it('imports a single, pipe-delimited record', () => {
-      const record = 'a|b|c|d|1/1/1111';
-      recordManager.import(record);
-      expect(recordManager.records).to.have.length(1);
-    });
+    describe('when importing a multiple records', () => {
+      let recordManager;
 
-    it('imports a single, space-delimited record', () => {
-      const record = 'a b c d 1/1/1111';
-      recordManager.import(record);
-      expect(recordManager.records).to.have.length(1);
-    });
+      beforeEach(() => recordManager = new RecordManager());
 
-    it('the imported record is a Record instance', () => {
-      const record = 'a,b,c,d,1/1/1111';
-      recordManager.import(record);
-      const newRecord = recordManager.records[0];
+      it('imports an array of comma-delimited records', () => {
+        const records = ['a,b,c,d,1/1/1111', 'e,f,g,h,2/2/2222'];
+        recordManager.import(records);
+        expect(recordManager.records).to.have.length(2);
+      });
 
-      expect(newRecord).to.be.an.instanceOf(Record);
-    });
+      it('imports an array of pipe-delimited records', () => {
+        const records = ['a|b|c|d|1/1/1111', 'e|f|g|h|2/2/2222'];
+        recordManager.import(records);
+        expect(recordManager.records).to.have.length(2);
+      });
 
-    it('the imported record has the proper fields', () => {
-      const record = 'a,b,c,d,1/1/1111';
-      recordManager.import(record);
-      const newRecord = recordManager.records[0];
-
-      expect(newRecord.lastName).to.eq('a');
-      expect(newRecord.firstName).to.eq('b');
-      expect(newRecord.gender).to.eq('c');
-      expect(newRecord.favoriteColor).to.eq('d');
-      expect(newRecord.dateOfBirth.getTime()).to.eq(new Date('1111-01-01').getTime());
+      it('imports an array of space-delimited records', () => {
+        const records = ['a b c d 1/1/1111', 'e f g h 2/2/2222'];
+        recordManager.import(records);
+        expect(recordManager.records).to.have.length(2);
+      });
     });
   });
 });
