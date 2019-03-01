@@ -24,13 +24,20 @@ export default class RecordManager {
   }
 
   sortedBy(...keysOrders) {
-    console.log('sortedBy')
-    console.log(keysOrders)
-    const [keys, orders] = _.partition(keysOrders, el => keysOrders.indexOf(el) % 2 === 0)
+    const keys = [];
+    const orders = [];
+    keysOrders.forEach((el, idx) => {
+      if (idx % 2 === 0) {
+        keys.push(el);
+      } else {
+        orders.push(el);
+      }
+    });
+
     this.validateSortedByArguments(keys, orders);
 
     // normalize case of lastNames and genders
-    const caseDesensitizedKeys = keys.map(key => {
+    const iteratees = keys.map(key => {
       return record => {
         if (typeof record[key] === 'string') {
           return record[key].toLowerCase();
@@ -39,7 +46,7 @@ export default class RecordManager {
       }
     });
 
-    return _.orderBy(this.records, caseDesensitizedKeys, orders);
+    return _.orderBy(this.records, iteratees, orders);
   }
 
   validateSortedByArguments(keys, orders) {

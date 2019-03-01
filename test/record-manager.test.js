@@ -127,7 +127,7 @@ describe('RecordManager', () => {
       const data = [
         'a,b,c,d,1/1/2000',
         'e,f,g,h,1/1/2020',
-        'i,j,k,l,3,3,3333'
+        'i,j,k,l,1,1,2040'
       ];
       const preparedRecords = recordManager.prepareRecords(data);
       expect(preparedRecords).to.have.length(3);
@@ -211,24 +211,99 @@ describe('RecordManager', () => {
 
     it('sorts records by dateOfBirth, ascending', () => {
       recordManager.import([
-        '_,_,_,_,1/1/2019',
-        '_,_,_,_,2/1/2019'
+        '_,_,_,_,1/1/2000',
+        '_,_,_,_,1/1/2020'
       ]);
       const sortedRecords = recordManager.sortedBy('dateOfBirth');
-      expect(sortedRecords[0].dateOfBirth.getTime()).to.eq(new Date('2019-01-01').getTime());
-      expect(sortedRecords[1].dateOfBirth.getTime()).to.eq(new Date('2019-02-01').getTime());
+      expect(sortedRecords[0].dateOfBirth.getTime()).to.eq(new Date('2000-01-01').getTime());
+      expect(sortedRecords[1].dateOfBirth.getTime()).to.eq(new Date('2020-01-01').getTime());
+    });
+
+    it('sorts records by dateOfBirth, descending', () => {
+      recordManager.import([
+        '_,_,_,_,1/1/2000',
+        '_,_,_,_,1/1/2020'
+      ]);
+      const sortedRecords = recordManager.sortedBy('dateOfBirth', 'desc');
+      expect(sortedRecords[0].dateOfBirth.getTime()).to.eq(new Date('2020-01-01').getTime());
+      expect(sortedRecords[1].dateOfBirth.getTime()).to.eq(new Date('2000-01-01').getTime());
+    });
+
+    describe('it can sort by multiple keys, in various orders', () => {
+      it('sorts records by gender (asc), then lastName (asc)', () => {
+        recordManager.import([
+          'a,_,male,_,1/1/2000',
+          'z,_,male,_,1/1/2020',
+          'a,_,female,_,1/1/2000',
+          'z,_,female,_,1/1/2020'
+        ]);
+        const sortedRecords = recordManager.sortedBy('gender', 'asc', 'lastName', 'asc');
+        const [first, second, third, fourth] = sortedRecords;
+
+        expect(first.gender).to.eq('female');
+        expect(first.lastName).to.eq('a');
+
+        expect(second.gender).to.eq('female');
+        expect(second.lastName).to.eq('z');
+
+        expect(third.gender).to.eq('male');
+        expect(third.lastName).to.eq('a');
+
+        expect(fourth.gender).to.eq('male');
+        expect(fourth.lastName).to.eq('z');
+      });
+
+      it('sorts records by gender (asc), then lastName (desc)', () => {
+        recordManager.import([
+          'a,_,male,_,1/1/2000',
+          'z,_,male,_,1/1/2020',
+          'a,_,female,_,1/1/2000',
+          'z,_,female,_,1/1/2020'
+        ]);
+        const sortedRecords = recordManager.sortedBy('gender', 'asc', 'lastName', 'desc');
+        const [first, second, third, fourth] = sortedRecords;
+
+        expect(first.gender).to.eq('female');
+        expect(first.lastName).to.eq('z');
+
+        expect(second.gender).to.eq('female');
+        expect(second.lastName).to.eq('a');
+
+        expect(third.gender).to.eq('male');
+        expect(third.lastName).to.eq('z');
+
+        expect(fourth.gender).to.eq('male');
+        expect(fourth.lastName).to.eq('a');
+      });
+
+      it('sorts records by dateOfBirth (asc), then gender (desc)', () => {
+        recordManager.import([
+          'olderMale,_,male,_,1/1/2000',
+          'olderFemale,_,female,_,1/1/2000',
+          'youngerMale,_,male,_,1/1/2020',
+          'youngerFemale,_,female,_,1/1/2020'
+        ]);
+        const sortedRecords = recordManager.sortedBy('dateOfBirth', 'asc', 'gender', 'desc');
+        const [first, second, third, fourth] = sortedRecords;
+
+        // older to younger, males before females
+        expect(first.lastName).to.eq('olderMale');
+        expect(second.lastName).to.eq('olderFemale');
+        expect(third.lastName).to.eq('youngerMale');
+        expect(fourth.lastName).to.eq('youngerFemale');
+      });
     });
 
     describe('it ignores case when sorting by string fields', () => {
       it('by gender', () => {
         recordManager.import([
-          '_,_,female,_,1/1/2000',
-          '_,_,Male,_,1/1/2000'
+          '_,_,f,_,1/1/2000',
+          '_,_,M,_,1/1/2000'
         ]);
         const sortedRecords = recordManager.sortedBy('gender');
         expect('f' > 'M').to.be.true
-        expect(sortedRecords[0].gender).to.eq('female')
-        expect(sortedRecords[1].gender).to.eq('Male')
+        expect(sortedRecords[0].gender).to.eq('f')
+        expect(sortedRecords[1].gender).to.eq('M')
       });
 
       it('by lastName', () => {
