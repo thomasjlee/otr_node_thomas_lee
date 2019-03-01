@@ -104,4 +104,54 @@ describe('RecordManager', () => {
       expect(recordManager.records).to.have.length(6);
     });
   });
+
+  describe('#prepareRecords', () => {
+    let recordManager;
+    beforeEach(() => recordManager = new RecordManager());
+
+    it('returns an array of objects prepared for the Record constructor', () => {
+      const preparedRecords = recordManager.prepareRecords('a,b,c,d,1/1/1111');
+      const expected = {
+        lastName: 'a',
+        firstName: 'b',
+        gender: 'c',
+        favoriteColor: 'd',
+        dateOfBirth: '1/1/1111'
+      };
+      preparedRecords.forEach(prepared => {
+        expect(prepared).to.include(expected)
+      });
+    });
+
+    it('accepts multiple data', () => {
+      const data = [
+        'a,b,c,d,1/1/1111',
+        'e,f,g,h,2/2/2222',
+        'i,j,k,l,3,3,3333'
+      ];
+      const preparedRecords = recordManager.prepareRecords(data);
+      expect(preparedRecords).to.have.length(3);
+      preparedRecords.forEach(prepared => {
+        expect(prepared).to.have.property('lastName');
+        expect(prepared).to.have.property('firstName');
+        expect(prepared).to.have.property('gender');
+        expect(prepared).to.have.property('favoriteColor');
+        expect(prepared).to.have.property('dateOfBirth');
+      });
+    });
+  });
+
+  describe('#detectDelimiter', () => {
+    it('detects commas', () => {
+      expect((new RecordManager).detectDelimiter('a,b,c')).to.eq(',');
+    });
+
+    it('detects pipes', () => {
+      expect((new RecordManager).detectDelimiter('a|b|c')).to.eq('|');
+    });
+
+    it('detects spaces', () => {
+      expect((new RecordManager).detectDelimiter('a b c')).to.eq(' ');
+    });
+  });
 });
