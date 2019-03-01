@@ -6,9 +6,9 @@ import RecordManager from '../src/record-manager';
 describe('RecordManager', () => {
   describe('#import', () => {
     describe('when importing a single record', () => {
-      const commaDelimitedRecord = 'a,b,c,d,1/1/1111';
-      const pipeDelimitedRecord = 'a|b|c|d|1/1/1111';
-      const spaceDelimitedRecord = 'a b c d 1/1/1111';
+      const commaDelimitedRecord = 'a,b,c,d,1/1/2000';
+      const pipeDelimitedRecord = 'a|b|c|d|1/1/2000';
+      const spaceDelimitedRecord = 'a b c d 1/1/2000';
       let recordManager;
 
       beforeEach(() => recordManager = new RecordManager());
@@ -45,7 +45,7 @@ describe('RecordManager', () => {
         };
         const { lastName, firstName, gender, favoriteColor, dateOfBirth } = newRecord;
         expect({ lastName, firstName, gender, favoriteColor }).to.include(expectedFields);
-        expect(dateOfBirth.getTime()).to.eq(new Date('1111-01-01').getTime());
+        expect(dateOfBirth.getTime()).to.eq(new Date('2000-01-01').getTime());
       });
     });
 
@@ -54,19 +54,19 @@ describe('RecordManager', () => {
       beforeEach(() => recordManager = new RecordManager());
 
       it('imports an array of comma-delimited records', () => {
-        const records = ['a,b,c,d,1/1/1111', 'e,f,g,h,2/2/2222'];
+        const records = ['a,b,c,d,1/1/2000', 'e,f,g,h,1/1/2020'];
         recordManager.import(records);
         expect(recordManager.records).to.have.length(2);
       });
 
       it('imports an array of pipe-delimited records', () => {
-        const records = ['a|b|c|d|1/1/1111', 'e|f|g|h|2/2/2222'];
+        const records = ['a|b|c|d|1/1/2000', 'e|f|g|h|1/1/2020'];
         recordManager.import(records);
         expect(recordManager.records).to.have.length(2);
       });
 
       it('imports an array of space-delimited records', () => {
-        const records = ['a b c d 1/1/1111', 'e f g h 2/2/2222'];
+        const records = ['a b c d 1/1/2000', 'e f g h 1/1/2020'];
         recordManager.import(records);
         expect(recordManager.records).to.have.length(2);
       });
@@ -110,13 +110,13 @@ describe('RecordManager', () => {
     beforeEach(() => recordManager = new RecordManager());
 
     it('returns an array of objects prepared for the Record constructor', () => {
-      const preparedRecords = recordManager.prepareRecords('a,b,c,d,1/1/1111');
+      const preparedRecords = recordManager.prepareRecords('a,b,c,d,1/1/2000');
       const expected = {
         lastName: 'a',
         firstName: 'b',
         gender: 'c',
         favoriteColor: 'd',
-        dateOfBirth: '1/1/1111'
+        dateOfBirth: '1/1/2000'
       };
       preparedRecords.forEach(prepared => {
         expect(prepared).to.include(expected)
@@ -125,8 +125,8 @@ describe('RecordManager', () => {
 
     it('accepts multiple data', () => {
       const data = [
-        'a,b,c,d,1/1/1111',
-        'e,f,g,h,2/2/2222',
+        'a,b,c,d,1/1/2000',
+        'e,f,g,h,1/1/2020',
         'i,j,k,l,3,3,3333'
       ];
       const preparedRecords = recordManager.prepareRecords(data);
@@ -171,8 +171,8 @@ describe('RecordManager', () => {
 
     it('sorts records by gender, ascending', () => {
       recordManager.import([
-        '_,_,female,_,1/1/1111',
-        '_,_,male,_,1/1/1111'
+        '_,_,female,_,1/1/2000',
+        '_,_,male,_,1/1/2000'
       ]);
       const sortedRecords = recordManager.sortedBy('gender');
       expect(sortedRecords[0].gender).to.eq('female');
@@ -181,8 +181,8 @@ describe('RecordManager', () => {
 
     it('sorts records by gender, descending', () => {
       recordManager.import([
-        '_,_,female,_,1/1/1111',
-        '_,_,male,_,1/1/1111'
+        '_,_,female,_,1/1/2000',
+        '_,_,male,_,1/1/2000'
       ]);
       const sortedRecords = recordManager.sortedBy('gender', 'desc');
       expect(sortedRecords[0].gender).to.eq('male');
@@ -191,8 +191,8 @@ describe('RecordManager', () => {
 
     it('sorts records by lastName, ascending', () => {
       recordManager.import([
-        'a,_,_,_,1/1/1111',
-        'z,_,_,_,1/1/1111'
+        'a,_,_,_,1/1/2000',
+        'z,_,_,_,1/1/2000'
       ]);
       const sortedRecords = recordManager.sortedBy('lastName');
       expect(sortedRecords[0].lastName).to.eq('a');
@@ -201,8 +201,8 @@ describe('RecordManager', () => {
 
     it('sorts records by lastName, descending', () => {
       recordManager.import([
-        'a,_,_,_,1/1/1111',
-        'z,_,_,_,1/1/1111'
+        'a,_,_,_,1/1/2000',
+        'z,_,_,_,1/1/2000'
       ]);
       const sortedRecords = recordManager.sortedBy('lastName', 'desc');
       expect(sortedRecords[0].lastName).to.eq('z');
@@ -222,8 +222,8 @@ describe('RecordManager', () => {
     describe('it ignores case when sorting by string fields', () => {
       it('by gender', () => {
         recordManager.import([
-          '_,_,female,_,1/1/1111',
-          '_,_,Male,_,1/1/1111'
+          '_,_,female,_,1/1/2000',
+          '_,_,Male,_,1/1/2000'
         ]);
         const sortedRecords = recordManager.sortedBy('gender');
         expect('f' > 'M').to.be.true
@@ -233,8 +233,8 @@ describe('RecordManager', () => {
 
       it('by lastName', () => {
         recordManager.import([
-          'a,_,_,_,1/1/1111',
-          'B,_,_,_,1/1/1111'
+          'a,_,_,_,1/1/2000',
+          'B,_,_,_,1/1/2000'
         ]);
         const sortedRecords = recordManager.sortedBy('lastName');
         expect('a' > 'B').to.be.true
