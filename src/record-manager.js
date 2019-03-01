@@ -23,6 +23,40 @@ export default class RecordManager {
     this.records = this.records.concat(recordsWithFields.map(record => new Record(record)));
   }
 
+  sortedBy(...keysOrders) {
+    console.log('sortedBy')
+    console.log(keysOrders)
+    const [keys, orders] = _.partition(keysOrders, el => keysOrders.indexOf(el) % 2 === 0)
+    this.validateSortedByArguments(keys, orders);
+
+    // normalize case of lastNames and genders
+    const caseDesensitizedKeys = keys.map(key => {
+      return record => {
+        if (typeof record[key] === 'string') {
+          return record[key].toLowerCase();
+        }
+        return record[key];
+      }
+    });
+
+    return _.orderBy(this.records, caseDesensitizedKeys, orders);
+  }
+
+  validateSortedByArguments(keys, orders) {
+    const acceptableKeys = ['gender', 'lastName', 'dateOfBirth'];
+    const acceptableOrders = ['asc', 'desc'];
+    const invalidKeyErr = new Error(`Records may be sorted by [${acceptableKeys.join(', ')}]`);
+    const invalidOrderErr = new Error(`Acceptable orders include [${acceptableOrders.join(', ')}]`);
+
+    keys.forEach(key => {
+      if (!acceptableKeys.includes(key)) throw invalidKeyErr;
+    });
+
+    orders.forEach(order => {
+      if (!acceptableOrders.includes(order)) throw invalidOrderErr;
+    });
+  }
+
   prepareRecords(recordSeeds) {
     if (typeof recordSeeds === 'string') {
       recordSeeds = [recordSeeds];

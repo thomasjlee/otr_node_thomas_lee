@@ -8,7 +8,7 @@ export default class Record {
   }
 
   setDate(date) {
-    const [day, month, year] = date.split('/');
+    const [month, day, year] = date.split('/');
     return new Date([year, month.padStart(2, 0), day.padStart(2, 0)].join('-'));
   }
 }

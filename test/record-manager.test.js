@@ -154,4 +154,93 @@ describe('RecordManager', () => {
       expect((new RecordManager).detectDelimiter('a b c')).to.eq(' ');
     });
   });
+
+  describe('#sortedBy', () => {
+    let recordManager;
+    beforeEach(() => recordManager = new RecordManager());
+
+    it('validates key arguments', () => {
+      expect(() => recordManager.sortedBy('invalid')).to.throw(/Records may be sorted by/);
+      expect(() => recordManager.sortedBy('gender', 'asc', 'invalid')).to.throw(/Records may be sorted by/);
+    });
+
+    it('validates order arguments', () => {
+      expect(() => recordManager.sortedBy('gender', 'invalid')).to.throw(/Acceptable orders include/);
+      expect(() => recordManager.sortedBy('gender', 'asc', 'lastName', 'invalid')).to.throw(/Acceptable orders include/);
+    });
+
+    it('sorts records by gender, ascending', () => {
+      recordManager.import([
+        '_,_,female,_,1/1/1111',
+        '_,_,male,_,1/1/1111'
+      ]);
+      const sortedRecords = recordManager.sortedBy('gender');
+      expect(sortedRecords[0].gender).to.eq('female');
+      expect(sortedRecords[1].gender).to.eq('male');
+    });
+
+    it('sorts records by gender, descending', () => {
+      recordManager.import([
+        '_,_,female,_,1/1/1111',
+        '_,_,male,_,1/1/1111'
+      ]);
+      const sortedRecords = recordManager.sortedBy('gender', 'desc');
+      expect(sortedRecords[0].gender).to.eq('male');
+      expect(sortedRecords[1].gender).to.eq('female');
+    });
+
+    it('sorts records by lastName, ascending', () => {
+      recordManager.import([
+        'a,_,_,_,1/1/1111',
+        'z,_,_,_,1/1/1111'
+      ]);
+      const sortedRecords = recordManager.sortedBy('lastName');
+      expect(sortedRecords[0].lastName).to.eq('a');
+      expect(sortedRecords[1].lastName).to.eq('z');
+    });
+
+    it('sorts records by lastName, descending', () => {
+      recordManager.import([
+        'a,_,_,_,1/1/1111',
+        'z,_,_,_,1/1/1111'
+      ]);
+      const sortedRecords = recordManager.sortedBy('lastName', 'desc');
+      expect(sortedRecords[0].lastName).to.eq('z');
+      expect(sortedRecords[1].lastName).to.eq('a');
+    });
+
+    it('sorts records by dateOfBirth, ascending', () => {
+      recordManager.import([
+        '_,_,_,_,1/1/2019',
+        '_,_,_,_,2/1/2019'
+      ]);
+      const sortedRecords = recordManager.sortedBy('dateOfBirth');
+      expect(sortedRecords[0].dateOfBirth.getTime()).to.eq(new Date('2019-01-01').getTime());
+      expect(sortedRecords[1].dateOfBirth.getTime()).to.eq(new Date('2019-02-01').getTime());
+    });
+
+    describe('it ignores case when sorting by string fields', () => {
+      it('by gender', () => {
+        recordManager.import([
+          '_,_,female,_,1/1/1111',
+          '_,_,Male,_,1/1/1111'
+        ]);
+        const sortedRecords = recordManager.sortedBy('gender');
+        expect('f' > 'M').to.be.true
+        expect(sortedRecords[0].gender).to.eq('female')
+        expect(sortedRecords[1].gender).to.eq('Male')
+      });
+
+      it('by lastName', () => {
+        recordManager.import([
+          'a,_,_,_,1/1/1111',
+          'B,_,_,_,1/1/1111'
+        ]);
+        const sortedRecords = recordManager.sortedBy('lastName');
+        expect('a' > 'B').to.be.true
+        expect(sortedRecords[0].lastName).to.eq('a')
+        expect(sortedRecords[1].lastName).to.eq('B')
+      });
+    });
+  });
 });
