@@ -1,0 +1,3 @@
+Drummond|Kathryn|female|blue|5/14/1992
+White|Barbara|female|green|9/10/1933
+Macrae|Ruby|female|red|5/7/1970
