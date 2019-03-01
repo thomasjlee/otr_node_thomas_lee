@@ -1,10 +1,22 @@
+import * as fs from 'fs';
+import * as path from 'path';
 import * as _ from 'lodash';
-
 import Record from './models/record';
 
 export default class RecordManager {
   constructor() {
     this.records = [];
+  }
+
+  importFromFile(file) {
+    return new Promise((resolve, reject) => {
+      fs.readFile(file, { encoding: 'utf8' }, (err, data) => {
+        if (err) reject(err);
+        const recordSeeds = data.split('\n');
+        this.import(recordSeeds);
+        resolve();
+      });
+    });
   }
 
   import(data) {

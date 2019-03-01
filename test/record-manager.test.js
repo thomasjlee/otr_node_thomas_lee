@@ -1,5 +1,5 @@
+import * as path from 'path';
 import { expect } from 'chai';
-
 import Record from '../src/models/record';
 import RecordManager from '../src/record-manager';
 
@@ -9,8 +9,8 @@ describe('RecordManager', () => {
       const commaDelimitedRecord = 'a,b,c,d,1/1/1111';
       const pipeDelimitedRecord = 'a|b|c|d|1/1/1111';
       const spaceDelimitedRecord = 'a b c d 1/1/1111';
-
       let recordManager;
+
       beforeEach(() => recordManager = new RecordManager());
 
       it('imports a single, comma-delimited record', () => {
@@ -51,7 +51,6 @@ describe('RecordManager', () => {
 
     describe('when importing a multiple records', () => {
       let recordManager;
-
       beforeEach(() => recordManager = new RecordManager());
 
       it('imports an array of comma-delimited records', () => {
@@ -71,6 +70,38 @@ describe('RecordManager', () => {
         recordManager.import(records);
         expect(recordManager.records).to.have.length(2);
       });
+    });
+  });
+
+  describe('#importFromFile', () => {
+    const resolveFixturesPath = (file) => path.join(__dirname, '..', 'test', 'fixtures', file);
+    const commaDelimitedFile = resolveFixturesPath('comma-delimited.csv');
+    const pipeDelimitedFile = resolveFixturesPath('pipe-delimited.txt');
+    const spaceDelimitedFile = resolveFixturesPath('space-delimited.txt');
+    let recordManager;
+
+    beforeEach(() => recordManager = new RecordManager());
+
+    it('imports a file with comma-delimited records', async () => {
+      await recordManager.importFromFile(commaDelimitedFile);
+      expect(recordManager.records).to.have.length(2);
+    });
+
+    it('imports a file with pipe-delimited records', async () => {
+      await recordManager.importFromFile(pipeDelimitedFile);
+      expect(recordManager.records).to.have.length(2);
+    });
+
+    it('imports a file with space-delimited records', async () => {
+      await recordManager.importFromFile(spaceDelimitedFile);
+      expect(recordManager.records).to.have.length(2);
+    });
+
+    it('imports multiple files', async () => {
+      await recordManager.importFromFile(commaDelimitedFile);
+      await recordManager.importFromFile(pipeDelimitedFile);
+      await recordManager.importFromFile(spaceDelimitedFile);
+      expect(recordManager.records).to.have.length(6);
     });
   });
 });
