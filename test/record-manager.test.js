@@ -1,6 +1,6 @@
 import * as path from 'path';
 import { expect } from 'chai';
-import Record from '../src/models/record';
+import Record from '../src/record';
 import RecordManager from '../src/record-manager';
 
 describe('RecordManager', () => {

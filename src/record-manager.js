@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as _ from 'lodash';
-import Record from './models/record';
+import Record from './record';
 
 export default class RecordManager {
   constructor() {
