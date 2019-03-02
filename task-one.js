@@ -3,7 +3,7 @@ import RecordManager from './src/record-manager';
 const printUsage = () => {
   console.log('Import files with the --files flag\n');
   console.log('Example:');
-  console.log('   npm run task-one --files ./file/one ./file/two ...');
+  console.log('   npm run task-one -- --files ./file/one ./file/two ...');
 };
 
 (async () => {
