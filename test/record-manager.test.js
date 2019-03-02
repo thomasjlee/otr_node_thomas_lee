@@ -49,7 +49,7 @@ describe('RecordManager', () => {
       });
     });
 
-    describe('when importing a multiple records', () => {
+    describe('when importing multiple records', () => {
       let recordManager;
       beforeEach(() => recordManager = new RecordManager());
 
