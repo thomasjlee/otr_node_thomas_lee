@@ -34,5 +34,11 @@ const printUsage = () => {
     await recordManager.importFromFile(file);
   }
 
-  console.log(recordManager.records)
+  if (sortFlagIndex >= 0) {
+    const sortArgs = args.slice(sortFlagIndex + 1);
+    const sortedRecords = recordManager.sortedBy(...sortArgs);
+    recordManager.displayRecords(sortedRecords);
+  } else {
+    recordManager.displayRecords();
+  }
 })();

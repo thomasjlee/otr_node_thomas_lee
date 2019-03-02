@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as _ from 'lodash';
+import 'console.table';
 import Record from './record';
 
 export default class RecordManager {
@@ -82,5 +83,20 @@ export default class RecordManager {
     const match = /[,|\|\s]/.exec(data);
     const delimiter = match[0];
     return delimiter;
+  }
+
+  displayRecords(records = this.records) {
+    if (!records.length) console.log('No records to display');
+
+    // format date
+    const forDisplay = records.map(record => {
+      const { dateOfBirth } = record;
+      const D = dateOfBirth.getDate();
+      const M = dateOfBirth.getMonth() + 1;
+      const YYYY = dateOfBirth.getFullYear();
+      record.dateOfBirth = `${M}/${D}/${YYYY}`;
+      return record;
+    });
+    console.table(forDisplay);
   }
 }
