@@ -1,4 +1,4 @@
-## Setup
+# Setup
 
 This sample was developed using Node 10 and Babel 7.
 
@@ -8,9 +8,7 @@ Setup:
 2. `cd otr_node_thomas_lee`
 3. `npm install`
 
-## Run
-
-### Task 1
+# Task 1
 
 Solutions to Task 1 are displayed via the `task-one` npm script: `npm run task-one -- [args]`
 
@@ -20,9 +18,9 @@ Pass files using their relative paths: `--files ./files/comma-delimited.csv`
 
 Pass sort arguments with alternating sort keys and orders: `--sort gender asc lastName desc`
 
-Acceptable sort keys are gender, lastName, and dateOfBirth.
+__Acceptable sort keys are gender, lastName, and dateOfBirth.__
 
-Acceptable order keys are asc and desc.
+__Acceptable order keys are asc and desc.__
 
 Full example:
 
@@ -44,15 +42,21 @@ Full example:
 
 `npm run task-one -- --files ./files/comma-delimited.csv ./files/pipe-delimited.txt ./files/space-delimited.txt --sort lastName desc`
 
-### Task 2
+# Task 2
 
-...
+Start the server with `npm start` or `npm run task-two`.
 
-## Tests
+The Koa app is instantiated in `task-two.js`.
+
+However, it is encapsulated within the RecordManagerAPI class so that a RecordManager
+instance could be used as an in-memory store between requests. I'm doubtful that this is idiomatic,
+but it made it easier to test.
+
+# Tests
 
 To run the tests, run `npm test`.
 
-## Assumptions
+# Assumptions
 __Task 1__
 
 - Data contains no headers.
@@ -76,4 +80,4 @@ __Task 2__
 }
 ```
 - The `records` array may also consist of strings with pipe "|" or space delimited fields, but must be consistent per request.
-- Responses to all POST and GET requests will similarly consist of a "records" key, with an array of JSON representing User records.
+- Responses to all POST and GET requests consist of a `status` and `data` object containing a `records` key.
